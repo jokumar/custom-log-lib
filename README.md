@@ -92,14 +92,7 @@ Scenario 2: Error
 | executionTime |  Time to execute in milliseconds | Execution time of a method where @CustomLog is annotated |
 | threadId | Thread Identifier | Thread Id assigned within application |
 | sessionId | Session Identifier | Http request sessionId |
-| keyInfo | Key information relevant to the request – all parameters to the request | Use CustomMdcUtil to set keyInfo properties.
-
-Map<String, String> keyInfo = new LinkedHashMap<>();
-		keyInfo.put("SAMPLE", requestData.getSample());
-		keyInfo.put("PNR", requestData.getPnr());
-		CustomMdcUtil.setKeyInfo(keyInfo); 
-		
- |
+| keyInfo | Key information relevant to the request – all parameters to the request | Use CustomMdcUtil to set keyInfo properties.  `Map<String, String> keyInfo = new LinkedHashMap<>();`		`keyInfo.put("SAMPLE", requestData.getSample());` `keyInfo.put("PNR", requestData.getPnr());`  `CustomMdcUtil.setKeyInfo(keyInfo);` |
 | channelName | Business partner or channel identifier | Mapped with ‘client_id’ which is part of request header |
 | remoteHost | Remote host name | Mapped with ‘RemoteAddr’ which is part of request header |
 | errorCode | Error Code if any | Get from CustomException |
