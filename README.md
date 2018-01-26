@@ -28,7 +28,7 @@ The custom log library takes care of printing the log in a specific format and l
 ```
 
 
--Component name should be provided as a property in the properties file for the boot application.
+- Component name should be provided as a property in the properties file for the boot application.
 ```sh
  component.name = spring-boot-service
 ```
@@ -42,7 +42,7 @@ logging.level.org.springframework.ws.client.MessageTracing=ERROR
 logging.level.org.springframework.ws=INFO
 logging.level.org.apache.http.headers=INFO
 ```		
--Log the Service Name : For custom annotation, we need to add the annotation like below :
+- Log the Service Name : For custom annotation, we need to add the annotation like below :
 ```sh
 @CustomLog(serviceName = "Availability")
 ```
@@ -50,7 +50,7 @@ Attribute serviceName in the Annotation will help in defining the appropriate se
 If client don’t pass anything in serviceName attribute classname.methodName will be logged under serviceName field.
 During error scenarios serviceName would be the first element from StackTrace would be logged from where the exception has occurred.
 
--Log invocation & execution Timing: In order to trigger logging ,the methods for which we need the execution time, we have to add the annotation at method level. Similarly we can add the very same annotation at all the entry level methods to get the execution time of a flow/service call.
+- Log invocation & execution Timing: In order to trigger logging ,the methods for which we need the execution time, we have to add the annotation at method level. Similarly we can add the very same annotation at all the entry level methods to get the execution time of a flow/service call.
 
 ```sh
 @CustomLog(serviceName= "Availability")
@@ -59,14 +59,14 @@ public CustomAvailabilityResponseWsDTO getAvailability() {
 // Code Execution.
 }
 ```
--Log Request during Error: In order to log request body, we have to populate temp request using CustomMdcUtil before making any external integrations call so that logging of request structure will be handled in error Scenario.
+- Log Request during Error: In order to log request body, we have to populate temp request using CustomMdcUtil before making any external integrations call so that logging of request structure will be handled in error Scenario.
 
 ```sh
 CustomMdcUtil.setTempRequest(requestData); 
 ```
--Request Logging: Controllers should add the original request to the tempRequest to capture this data during error scenario.  
+- Request Logging: Controllers should add the original request to the tempRequest to capture this data during error scenario.  
 
-###Sample Logs
+### Sample Logs
 
 Scenario 1: 200 ok
 ```sh
@@ -78,3 +78,34 @@ Scenario 2: Error
 "dateTime":"2017-11-30 18:45:55,524","host":"USHYDLMEENAKSH5","port":"8080","txnIdentifier":"663","threadId":"http-nio-8080-exec-2","sessionId":"","keyInfo":"","channelName":"11e2ba1399fa4854a2a9d88219407d1b","remoteHost":"","errorCode":"","errorMsg":"","environment":"local","component":"","serviceName":"Search Service","executionTime":"","request":"","response":"","message":"{app-id recieved in request : 11e2ba1399fa4854a2a9d88219407d1b  }"}
 {"dateTime":"2017-11-30 18:46:14,258","host":"USHYDLMEENAKSH5","port":"8080","txnIdentifier":"663","threadId":"http-nio-8080-exec-2","sessionId":"","keyInfo":"","channelName":"11e2ba1399fa4854a2a9d88219407d1b","remoteHost":"","errorCode":"T01","errorMsg":"","environment":"local","component":"","serviceName":"validateBookingDate","executionTime":"","request":"","response":"","message":"{Exception Occurred: com.custom.helper.CustomSearchFacadeHelper.validateDate(CustomFacadeHelper.java:617) }"}
 ```
+ 
+### Logging Property Mapping 
+
+| Key | Description | Spring/Java App |
+| ------ | ------ |  ------|
+| Date | Log entry date |
+| Time | Log entry time |
+| Host | Hostname | Configured HostName |
+| Port | Port number if any | Http request server port |
+| txnIdentifier | Transaction Identifier | ‘Request-id’ value expected in request Header. This is to identify a particular transaction in a flow |
+| serviceName | Service/api name | Custom value set under @CustomLog else it would be className.MethodName |
+| executionTime |  Time to execute in milliseconds | Execution time of a method where @CustomLog is annotated |
+| threadId | Thread Identifier | Thread Id assigned within application |
+| sessionId | Session Identifier | Http request sessionId |
+| keyInfo | Key information relevant to the request – all parameters to the request | Use CustomMdcUtil to set keyInfo properties.
+```sh
+Map<String, String> keyInfo = new LinkedHashMap<>();
+		keyInfo.put("SAMPLE", requestData.getSample());
+		keyInfo.put("PNR", requestData.getPnr());
+		CustomMdcUtil.setKeyInfo(keyInfo); 
+```		
+ |
+| channelName | Business partner or channel identifier | Mapped with ‘client_id’ which is part of request header |
+| remoteHost | Remote host name | Mapped with ‘RemoteAddr’ which is part of request header |
+| errorCode | Error Code if any | Get from CustomException |
+| errorMsg | Brief description of error if any | Get from CustomException |
+| Environment | Environment Identifier | Mapped with profile in which application is running |
+| Component | Component name | Spring Application should this below property.
+Ex: component.name = Custom-template-service |
+| Request | Request Message | Will set in error scenarios |
+| Response | Response Message | Use CustomMdcUtil.setResponse to set response |
