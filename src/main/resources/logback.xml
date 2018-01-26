@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+	<property name="LOGS_HOME" value="logs/" />
+
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<layout class="ch.qos.logback.classic.PatternLayout">
+			<Pattern>
+				{"dateTime":"%d","host":"%X{Host}","port":"%X{Port}","txnIdentifier":"%X{txnId}","threadId":"%t","sessionId":"%X{sessionId}","keyInfo":"%X{keyInfo}","channelName":"%X{channelName}","remoteHost":"%X{RemoteAddr}","errorCode":"%X{ErrorCode}","errorMsg":"%X{ErrorMsg}","environment":"%X{Environment}","component":"%X{component.name}","serviceName":"%X{serviceName}","executionTime":"%X{ExecutionTime}","request":"%X{Request}","response":"%X{Response}","message":"{message:%m }"}%n
+			</Pattern>
+		</layout>
+	</appender>
+
+	<appender name="FILE"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOGS_HOME}application.log</file>
+		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+			<Pattern>
+				{"dateTime":"%d","host":"%X{Host}","port":"%X{Port}","txnIdentifier":"%X{txnId}","threadId":"%t","sessionId":"%X{sessionId}","keyInfo":"%X{keyInfo}","channelName":"%X{channelName}","remoteHost":"%X{RemoteAddr}","errorCode":"%X{ErrorCode}","errorMsg":"%X{ErrorMsg}","environment":"%X{Environment}","component":"%X{component.name}","serviceName":"%X{serviceName}","executionTime":"%X{ExecutionTime}","request":"%X{Request}","response":"%X{Response}","message":"{message:%m }"}%n
+			</Pattern>
+		</encoder>
+
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<!-- rollover daily -->
+			<fileNamePattern>${LOGS_HOME}application-%d{yyyy-MM-dd}.%i.log
+			</fileNamePattern>
+			<timeBasedFileNamingAndTriggeringPolicy
+				class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>100MB</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+		</rollingPolicy>
+	</appender>
+
+	<appender name="FILE-TIMINGS"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOGS_HOME}timings.log</file>
+		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+			<Pattern>
+				{"dateTime":"%d","host":"%X{Host}","port":"%X{Port}","txnIdentifier":"%X{txnId}","threadId":"%t","sessionId":"%X{sessionId}","keyInfo":"%X{keyInfo}","channelName":"%X{channelName}","remoteHost":"%X{RemoteAddr}","errorCode":"%X{ErrorCode}","errorMsg":"%X{ErrorMsg}","environment":"%X{Environment}","component":"%X{component.name}","serviceName":"%X{serviceName}","executionTime":"%X{ExecutionTime}","request":"%X{Request}","response":"%X{Response}","message":"{message:%m }"}%n
+			</Pattern>
+		</encoder>
+
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<!-- rollover daily -->
+			<fileNamePattern>${LOGS_HOME}timings-%d{yyyy-MM-dd}.%i.log
+			</fileNamePattern>
+			<timeBasedFileNamingAndTriggeringPolicy
+				class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>10MB</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+		</rollingPolicy>
+	</appender>
+
+	<springProfile name="default">
+		<logger name="com.custom.log" level="info" additivity="false">
+			<appender-ref ref="FILE" />
+			<appender-ref ref="STDOUT" />
+		</logger>
+		<logger name="com.custom.log" level="info"
+			additivity="false">
+			<appender-ref ref="FILE-TIMINGS" />
+		</logger>
+
+		<logger name="org.springframework.ws" level="trace" additivity="false">
+			<appender-ref ref="FILE" />
+			<appender-ref ref="STDOUT" />
+		</logger>
+		<logger name="org.apache.http.headers" level="error"
+			additivity="false">
+			<appender-ref ref="FILE" />
+			<appender-ref ref="STDOUT" />
+		</logger>
+	</springProfile>
+
+	<springProfile name="local">
+		<logger name="com.custom.log" level="info" additivity="false">
+			<appender-ref ref="FILE" />
+			<appender-ref ref="STDOUT" />
+		</logger>
+		<logger name="com.custom.log" level="info" additivity="false">
+			<appender-ref ref="FILE-TIMINGS" />
+		</logger>
+		<logger name="org.springframework.ws" level="trace" additivity="false">
+			<appender-ref ref="FILE" />
+			<appender-ref ref="STDOUT" />
+		</logger>
+		<logger name="org.apache.http.headers" level="error" additivity="false">
+			<appender-ref ref="FILE" />
+			<appender-ref ref="STDOUT" />
+		</logger>
+	</springProfile>
+
+	<root level="error">
+		<appender-ref ref="FILE" />
+		<appender-ref ref="STDOUT" />
+	</root>
+
+</configuration>
